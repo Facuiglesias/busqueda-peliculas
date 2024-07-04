@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.container::-webkit-scrollbar {
+  width: 8px; /* Tamaño del scroll en vertical */
+}
+
+/* Ponemos un color de fondo y redondeamos las esquinas del thumb */
+.container::-webkit-scrollbar-thumb {
+  background: #595959;
+  border-radius: 4px;
+}
+
+/* Cambiamos el fondo y agregamos una sombra cuando esté en hover */
+.container::-webkit-scrollbar-thumb:hover {
+  background: rgb(65, 65, 65);
+}
+
+/* Ponemos un color de fondo y redondeamos las esquinas del track */
+.container::-webkit-scrollbar-track {
+  border-radius: 4px;
+  box-shadow: 0px 0px 5px 1px #4299e1;
+}
+
+.grid-responsive {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
