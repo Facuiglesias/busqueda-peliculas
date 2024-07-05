@@ -1,38 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-function Form({ setMovies }) {
+function Form({ setMovies, setLoading, setError }) {
   const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
 
-  const URL = `http://www.omdbapi.com/?apikey=4287ad07&s=${search}`;
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("entre");
 
-    setSearch(inputValue);
+    // setSearch(inputValue);
   };
+
   const handleChange = (e) => {
     const value = e.target.value;
+    const URL = `http://www.omdbapi.com/?apikey=4287ad07&s=${value}`;
 
     setInputValue(value);
-  };
-
-  useEffect(() => {
     const fetchMovies = async () => {
       const response = await fetch(URL);
       const data = await response.json();
 
       if (data.Response == "False") {
-        setMovies(false);
+        if (data.Error == "Too many results.") {
+          setMovies(false);
+          setError(false);
+          setLoading(true);
+        } else if (data.Error == "Incorrect IMDb ID.") {
+          setMovies("");
+          setError(false);
+          setLoading(false);
+        } else {
+          setMovies(false);
+          setLoading(false);
+          setError(data.Error);
+        }
       } else {
+        setLoading(false);
+        setError(false);
         setMovies(data.Search);
-        setInputValue("");
+        // setInputValue("");
       }
     };
-
     fetchMovies();
-  }, [search]);
+  };
 
   return (
     <form
