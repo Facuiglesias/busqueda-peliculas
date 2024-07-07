@@ -1,4 +1,6 @@
 function Movie({ movie }) {
+  console.log(movie.imdbID);
+
   return (
     <div key={movie.imdbID} className="text-center flex flex-col gap-2">
       <div>

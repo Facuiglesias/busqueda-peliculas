@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 function Form({ setMovies, setLoading, setError }) {
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
+  const [timeoutId, setTimeoutId] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -10,37 +11,49 @@ function Form({ setMovies, setLoading, setError }) {
     // setSearch(inputValue);
   };
 
+  const fetchMovies = async (URL) => {
+    const response = await fetch(URL);
+    const data = await response.json();
+
+    if (data.Response == "False") {
+      if (data.Error == "Too many results.") {
+        setMovies(false);
+        setError(false);
+        setLoading(true);
+      } else if (data.Error == "Incorrect IMDb ID.") {
+        setMovies("");
+        setError(false);
+        setLoading(false);
+      } else {
+        setMovies(false);
+        setLoading(false);
+        setError(data.Error);
+      }
+    } else {
+      setLoading(false);
+      setError(false);
+      setMovies(data.Search);
+      // setInputValue("");
+    }
+  };
+
   const handleChange = (e) => {
     const value = e.target.value;
     const URL = `http://www.omdbapi.com/?apikey=4287ad07&s=${value}`;
 
     setInputValue(value);
-    const fetchMovies = async () => {
-      const response = await fetch(URL);
-      const data = await response.json();
+    setLoading(true);
+    setMovies(false);
 
-      if (data.Response == "False") {
-        if (data.Error == "Too many results.") {
-          setMovies(false);
-          setError(false);
-          setLoading(true);
-        } else if (data.Error == "Incorrect IMDb ID.") {
-          setMovies("");
-          setError(false);
-          setLoading(false);
-        } else {
-          setMovies(false);
-          setLoading(false);
-          setError(data.Error);
-        }
-      } else {
-        setLoading(false);
-        setError(false);
-        setMovies(data.Search);
-        // setInputValue("");
-      }
-    };
-    fetchMovies();
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    const newTimeoutId = setTimeout(() => {
+      fetchMovies(URL);
+    }, 2000);
+
+    setTimeoutId(newTimeoutId);
   };
 
   return (
